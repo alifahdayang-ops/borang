@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Kenderaan SSeMS</title>
+    <!-- Tailwind CSS untuk susun atur moden -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #e2e8f0;
+        }
+
+        /* Tetapan Kertas A4 */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        .sheet {
+            background: white;
+            width: 210mm;
+            min-height: 296mm;
+            padding: 15mm 20mm;
+            margin: 10mm auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Input Styling */
+        input[type="text"], input[type="number"], textarea {
+            border: none;
+            border-bottom: 1px solid #000;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .data-input:focus {
+            border-bottom: 2px solid #059669;
+        }
+
+        /* Print Rules */
+        @media print {
+            body { background: none; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            .sheet { 
+                margin: 0 !important; 
+                box-shadow: none !important; 
+                width: 210mm;
+                height: 296mm;
+                page-break-after: always;
+                border: none !important;
+            }
+            input { border-bottom: none !important; }
+            .printable-page { page-break-after: always; }
+        }
+
+        /* Chrome/Safari fix for scale */
+        body {
+            -webkit-print-color-adjust: exact;
+        }
+    </style>
+</head>
+<body class="p-0 md:p-8">
+
+    <!-- Control Panel (No Print) -->
+    <div class="max-w-[210mm] mx-auto mb-8 flex flex-wrap justify-between items-center gap-4 no-print bg-white p-6 rounded-2xl shadow-xl border border-slate-300">
+        <div>
+            <h1 class="font-extrabold text-xl text-slate-800 tracking-tight uppercase">Portal Kenderaan SSeMS</h1>
+            <div class="flex items-center gap-2 mt-1">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <p id="save-status" class="text-xs text-slate-500 font-medium">Auto-simpan aktif</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="hantarEmail()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all font-bold text-sm">
+                Email Pegawai
+            </button>
+            <button onclick="window.print()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all font-bold text-sm">
+                Simpan PDF / Cetak
+            </button>
+        </div>
+    </div>
+
+    <!-- HALAMAN 1 -->
+    <div class="sheet printable-page">
+        <!-- Header Section -->
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-6">
+            <img src="https://drive.google.com/uc?export=view&id=1ySDH7BRoL4Q2U4Cd9RYdqqj9WDH1CzzZ" alt="Logo" class="w-24 h-auto" />
+            <div class="text-center flex-1">
+                <div class="font-bold text-sm tracking-[0.2em] mb-1">KENDERAAN JABATAN</div>
+                <h1 class="text-[15pt] font-bold leading-tight uppercase">Borang Permohonan Penggunaan Kenderaan</h1>
+                <h2 class="text-[13pt] font-normal uppercase">Sekolah Seni Malaysia Sarawak</h2>
+            </div>
+            <div class="w-40 text-right text-[10pt]">
+                <div class="mb-1">NO. RUJUKAN:</div>
+                <input type="text" id="no_rujukan" class="data-input w-full text-right font-bold" />
+            </div>
+        </div>
+
+        <!-- Bahagian A -->
+        <section class="mb-8" style="font-size: 12pt;">
+            <h3 class="bg-slate-100 border border-black px-4 py-1.5 font-bold mb-5 uppercase text-[11pt]">BAHAGIAN A (DIISI OLEH PEMOHON)</h3>
+            
+            <div class="flex gap-12 mb-6 px-4 font-bold">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="jk" id="bas" class="data-input w-5 h-5 accent-emerald-600"> BAS (40 org)
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="jk" id="bas_mini" class="data-input w-5 h-5 accent-emerald-600"> BAS MINI (24 org)
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="radio" name="jk" id="van" class="data-input w-5 h-5 accent-emerald-600"> VAN (14 org)
+                </label>
+            </div>
+
+            <div class="space-y-5">
+                <div class="flex items-baseline gap-4">
+                    <span class="font-bold whitespace-nowrap">1. Tujuan penggunaan:</span>
+                    <input type="text" id="tujuan" class="data-input flex-1 px-2 py-0.5" placeholder="Sila nyatakan tujuan" />
+                </div>
+
+                <div class="flex items-baseline gap-4">
+                    <span class="font-bold whitespace-nowrap">2. Jumlah penumpang:</span>
+                    <input type="number" id="jumlah_penumpang" class="data-input w-20 text-center font-bold" />
+                    <span class="text-[10pt] italic text-slate-600">(Sila lengkapkan senarai nama di halaman 2)</span>
+                </div>
+
+                <div>
+                    <div class="font-bold mb-3">3. Tentatif perjalanan: <span class="text-[9pt] font-normal italic text-slate-500">(Sila buat lampiran jika tidak mencukupi)</span></div>
+                    <table class="w-full border-collapse border border-black">
+                        <thead>
+                            <tr class="bg-slate-50 text-[10pt] font-bold uppercase">
+                                <th class="border border-black p-2.5 w-[20%]">TARIKH</th>
+                                <th class="border border-black p-2.5 w-[25%]">MASA BERTOLAK / BALIK</th>
+                                <th class="border border-black p-2.5">PERGERAKAN AKTIVITI</th>
+                                <th class="border border-black p-2.5 w-[22%] text-[9pt]">DIISI OLEH KPT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="border border-black h-10"><input type="text" id="t1_1" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t1_2" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t1_3" class="data-input w-full h-full px-2"></td>
+                                <td class="border border-black h-10"><input type="text" id="t1_4" class="data-input w-full h-full px-2 bg-slate-50"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-black h-10"><input type="text" id="t2_1" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t2_2" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t2_3" class="data-input w-full h-full px-2"></td>
+                                <td class="border border-black h-10"><input type="text" id="t2_4" class="data-input w-full h-full px-2 bg-slate-50"></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-black h-10"><input type="text" id="t3_1" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t3_2" class="data-input w-full h-full text-center"></td>
+                                <td class="border border-black h-10"><input type="text" id="t3_3" class="data-input w-full h-full px-2"></td>
+                                <td class="border border-black h-10"><input type="text" id="t3_4" class="data-input w-full h-full px-2 bg-slate-50"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Maklumat Pemohon -->
+        <div class="flex justify-between items-end mb-10 mt-12 px-2" style="font-size: 11pt;">
+            <div class="space-y-3">
+                <div class="flex gap-3">
+                    <span class="font-bold min-w-[130px]">Nama Pemohon:</span>
+                    <input type="text" id="pemohon_nama" class="data-input w-80 font-bold uppercase" value="" />
+                </div>
+                <div class="flex gap-3">
+                    <span class="font-bold min-w-[130px]">Jawatan:</span>
+                    <input type="text" id="pemohon_jawatan" class="data-input w-80" value="" />
+                </div>
+                <div class="flex gap-3">
+                    <span class="font-bold min-w-[130px]">No. Telefon:</span>
+                    <input type="text" id="pemohon_tel" class="data-input w-80" />
+                </div>
+                <div class="flex gap-3">
+                    <span class="font-bold min-w-[130px]">Tarikh:</span>
+                    <input type="text" id="pemohon_tarikh" class="data-input w-80" />
+                </div>
+            </div>
+            <div class="w-60 text-center border-t border-black pt-3 font-bold italic">
+                (Tandatangan Pemohon)
+            </div>
+        </div>
+
+        <!-- Info Pemandu -->
+        <div class="text-[10pt] border border-slate-400 p-3 rounded-lg bg-slate-50/50 mb-6 font-medium italic">
+            <div class="font-bold underline mb-2 uppercase">INFO PEMANDU SSEMS:</div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="flex flex-col"><span>1. En. Rasul</span><span class="text-emerald-700">019-9556708</span></div>
+                <div class="flex flex-col"><span>2. En. Kushairi</span><span className="text-emerald-700">013-8400095</span></div>
+                <div class="flex flex-col"><span>3. En. Khairil</span><span className="text-emerald-700">0111-9684111</span></div>
+            </div>
+        </div>
+
+        <!-- Bahagian B & C -->
+        <div class="space-y-6">
+            <section class="border border-black p-5 rounded-md bg-slate-50/30">
+                <h3 class="font-bold underline mb-4 text-[11pt] uppercase tracking-wide">BAHAGIAN B (KEGUNAAN PEJABAT)</h3>
+                <div class="flex justify-between items-start mb-4">
+                   <span class="font-bold">Permohonan: <span class="text-slate-400 font-normal ml-2">( DISOKONG / TIDAK DISOKONG )</span></span>
+                   <div class="flex gap-8 font-bold border-l-2 border-black pl-6">
+                     <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ulang" class="data-input w-4 h-4" /> Ulang-alik</label>
+                     <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="tunggu" class="data-input w-4 h-4" /> Menunggu</label>
+                   </div>
+                </div>
+                <div class="flex items-baseline gap-3 mb-10">
+                  <span class="font-bold min-w-[80px]">Ulasan:</span>
+                  <input type="text" id="ulasan_pejabat" class="data-input flex-1" />
+                </div>
+                <div class="flex justify-end">
+                  <div class="w-60 text-center border-t border-black pt-1.5 text-[11pt] font-bold">Pegawai Kenderaan / KPT</div>
+                </div>
+            </section>
+
+            <section class="border-2 border-black p-5 rounded-md">
+                <div class="font-bold underline mb-5 text-[11pt] uppercase">BAHAGIAN C (KELULUSAN KETUA JABATAN)</div>
+                <div class="mb-14 font-bold">Permohonan: <span class="text-slate-300 font-normal ml-2">( DILULUSKAN / TIDAK DILULUSKAN )</span></div>
+                <div class="flex justify-end">
+                  <div class="w-72 text-center border-t-2 border-black pt-2 font-bold uppercase">PENGETUA / KETUA JABATAN</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- HALAMAN 2 -->
+    <div class="sheet">
+        <h2 class="text-center font-bold text-[14pt] underline mb-8 uppercase tracking-widest">SENARAI NAMA MURID</h2>
+        <table class="w-full border-collapse border border-black mb-10 text-[10pt]">
+            <thead>
+                <tr class="bg-slate-100 font-bold uppercase text-[9pt]">
+                    <th class="border border-black p-2 w-[8%] text-center">BIL.</th>
+                    <th class="border border-black p-2 text-center">NAMA PENUH MURID</th>
+                    <th class="border border-black p-2 w-[22%] text-center">KELAS / TINGKATAN</th>
+                </tr>
+            </thead>
+            <tbody id="murid-table">
+                <!-- Dijana oleh JavaScript -->
+            </tbody>
+        </table>
+
+        <div class="border-2 border-black p-6 bg-slate-50/30 rounded-lg">
+            <div class="font-bold underline mb-4 text-[12pt] uppercase flex items-center gap-2">
+                PERATURAN PENGGUNAAN KENDERAAN
+            </div>
+            <ol class="list-decimal pl-8 text-[11pt] space-y-2.5 leading-relaxed font-medium">
+                <li>Pastikan kenderaan dalam keadaan selamat sebelum memulakan perjalanan.</li>
+                <li>Pastikan minyak kenderaan sentiasa mencukupi untuk setiap perjalanan.</li>
+                <li>Pastikan buku rekod penggunaan kenderaan dilengkapkan dan sentiasa dibawa bersama.</li>
+                <li>Pastikan guru pengiring ada bersama murid semasa dalam perjalanan.</li>
+                <li>Kenderaan hendaklah sentiasa dalam keadaan bersih sebelum dan selepas penggunaan.</li>
+                <li>Patuhi segala peraturan jalan raya yang telah ditetapkan oleh JPJ semasa memandu.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Tarikh hari ini secara automatik
+        document.getElementById('pemohon_tarikh').value = new Date().toLocaleDateString('en-GB');
+
+        // Bina 40 baris murid
+        const tableBody = document.getElementById('murid-table');
+        for (let i = 1; i <= 40; i++) {
+            const row = document.createElement('tr');
+            row.className = 'h-7 hover:bg-slate-50';
+            row.innerHTML = `
+                <td class="border border-black text-center font-bold bg-slate-50/50">${i}.</td>
+                <td class="border border-black p-0"><input type="text" id="murid_nama_${i}" class="data-input w-full h-full px-3 uppercase text-[10pt]"></td>
+                <td class="border border-black p-0"><input type="text" id="murid_kelas_${i}" class="data-input w-full h-full text-center text-[10pt]"></td>
+            `;
+            tableBody.appendChild(row);
+        }
+
+        // Fungsi Auto-Simpan
+        const inputs = document.querySelectorAll('.data-input');
+        
+        function saveData() {
+            const data = {};
+            inputs.forEach(input => {
+                if (input.type === 'checkbox' || input.type === 'radio') {
+                    data[input.id] = input.checked;
+                } else {
+                    data[input.id] = input.value;
+                }
+            });
+            localStorage.setItem('ssems_portal_data', JSON.stringify(data));
+            document.getElementById('save-status').innerText = 'Data disimpan: ' + new Date().toLocaleTimeString();
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('ssems_portal_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                inputs.forEach(input => {
+                    if (data[input.id] !== undefined) {
+                        if (input.type === 'checkbox' || input.type === 'radio') {
+                            input.checked = data[input.id];
+                        } else {
+                            input.value = data[input.id];
+                        }
+                    }
+                });
+            }
+        }
+
+        // Event listener untuk setiap input
+        inputs.forEach(input => {
+            input.addEventListener('input', saveData);
+        });
+
+        // Fungsi Email
+        function hantarEmail() {
+            const tujuan = document.getElementById('tujuan').value || 'SSeMS';
+            const nama = document.getElementById('pemohon_nama').value;
+            const subjek = encodeURIComponent(`Permohonan Kenderaan: ${tujuan}`);
+            const body = encodeURIComponent(
+                `Salam Tuan Hipni,\n\nSaya ingin memohon penggunaan kenderaan untuk tujuan berikut:\n\nTujuan: ${tujuan}\nNama Pemohon: ${nama}\n\nNota: Sila rujuk borang PDF yang dilampirkan.\n\nTerima kasih.`
+            );
+            window.location.href = `mailto:hipnialza@gmail.com?subject=${subjek}&body=${body}`;
+        }
+
+        // Muat data bila buka fail
+        window.onload = loadData;
+    </script>
+</body>
+</html>
